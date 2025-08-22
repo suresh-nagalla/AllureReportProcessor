@@ -31,10 +31,22 @@
             loadSlowTests();
             loadTopSteps();
             setupEvents();
+            addFilterLabels();
             filteredTests = [...(reportData.testResults || [])];
             applyFilters();
         } catch (err) { console.error('Report initialization failed:', err); }
     });
+
+    function addFilterLabels(){
+        qsa('.filters').forEach(f=>{
+            if(!f.querySelector('.filter-label')){
+                const lbl=document.createElement('div');
+                lbl.className='filter-label';
+                lbl.textContent='Filters';
+                f.prepend(lbl);
+            }
+        });
+    }
 
     function hydrateReportData() {
         const script = qs('#reportData');
@@ -46,7 +58,8 @@
     /* Theme */
     function applyStoredTheme() { const pref = localStorage.getItem('aqd_theme') || 'dark'; document.body.setAttribute('data-theme', pref); updateThemeToggleLabel(pref); }
     function toggleTheme() { const current = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; const next = current === 'light' ? 'dark' : 'light'; document.body.setAttribute('data-theme', next); localStorage.setItem('aqd_theme', next); updateThemeToggleLabel(next); }
-    function updateThemeToggleLabel(theme) { const btn = qs('#themeToggle'); if (btn){ btn.textContent = theme === 'light' ? '🌙 Dark' : '☀️ Light'; btn.setAttribute('aria-label','Switch to '+(theme==='light'?'dark':'light')+' theme'); } }
+    function updateThemeToggleLabel(theme) { const btn = qs('#themeToggle'); if (btn){ const next = theme==='light'? 'dark':'light'; // icon shows current mode symbol
+            btn.textContent = theme==='light' ? '☀️' : '🌙'; btn.dataset.label = 'Toggle Theme'; btn.setAttribute('aria-label','Switch to '+next+' theme'); } }
 
     /* Dashboard */
     function buildDashboard() {
