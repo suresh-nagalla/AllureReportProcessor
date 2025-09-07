@@ -18,6 +18,7 @@ public class QualityAnalysisResult
     public QualityRiskAssessment RiskAssessment { get; set; } = new();
     public PerformanceTrendAnalysis PerformanceTrends { get; set; } = new();
     public EnvironmentImpactAnalysis EnvironmentImpact { get; set; } = new();
+    public FailureAnalysisResult FailureAnalysis { get; set; } = new();
     public List<CriticalIssue> CriticalIssues { get; set; } = new();
     public List<ActionableRecommendation> ActionableRecommendations { get; set; } = new();
     public ExecutiveSummary ExecutiveSummary { get; set; } = new();
@@ -265,4 +266,142 @@ public class ExportSettings
     public bool EnableTestRailIntegration { get; set; } = false;
     public bool GenerateExecutiveSummary { get; set; } = true;
     public bool EnableAutomatedTicketCreation { get; set; } = false;
+}
+
+/// <summary>
+/// Comprehensive failure analysis for test runs
+/// </summary>
+public class FailureAnalysisResult
+{
+    public FailureCategorization FailureCategories { get; set; } = new();
+    public List<CommonFailurePattern> CommonFailures { get; set; } = new();
+    public List<TestCaseFailureGroup> TestCaseAnalysis { get; set; } = new();
+    public SeleniumFailureAnalysis SeleniumAnalysis { get; set; } = new();
+    public TimeoutFailureAnalysis TimeoutAnalysis { get; set; } = new();
+    public EnvironmentFailureAnalysis EnvironmentAnalysis { get; set; } = new();
+    public DateTime AnalyzedAt { get; set; } = DateTime.Now;
+}
+
+/// <summary>
+/// High-level categorization of all failures
+/// </summary>
+public class FailureCategorization
+{
+    public int TotalFailures { get; set; }
+    public int AssertionFailures { get; set; }
+    public int SeleniumIssues { get; set; }
+    public int TimeoutIssues { get; set; }
+    public int EnvironmentIssues { get; set; }
+    public int UnknownIssues { get; set; }
+
+    public double AssertionFailureRate => TotalFailures > 0 ? (double)AssertionFailures / TotalFailures * 100 : 0;
+    public double SeleniumFailureRate => TotalFailures > 0 ? (double)SeleniumIssues / TotalFailures * 100 : 0;
+    public double TimeoutFailureRate => TotalFailures > 0 ? (double)TimeoutIssues / TotalFailures * 100 : 0;
+    public double EnvironmentFailureRate => TotalFailures > 0 ? (double)EnvironmentIssues / TotalFailures * 100 : 0;
+}
+
+/// <summary>
+/// Common failure patterns across multiple tests
+/// </summary>
+public class CommonFailurePattern
+{
+    public string Pattern { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public int FailureCount { get; set; }
+    public List<string> AffectedTestCases { get; set; } = new();
+    public List<string> AffectedSuites { get; set; } = new();
+    public string Impact { get; set; } = string.Empty;
+    public string RecommendedAction { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Analysis of failures grouped by test case IDs extracted from tags
+/// </summary>
+public class TestCaseFailureGroup
+{
+    public string TestCaseId { get; set; } = string.Empty;
+    public int TotalFailures { get; set; }
+    public List<TestFailureDetail> FailureDetails { get; set; } = new();
+    public string PrimaryFailureReason { get; set; } = string.Empty;
+    public string FailureCategory { get; set; } = string.Empty;
+    public List<string> AffectedSuites { get; set; } = new();
+}
+
+public class TestFailureDetail
+{
+    public string SuiteName { get; set; } = string.Empty;
+    public string TestName { get; set; } = string.Empty;
+    public string FailureReason { get; set; } = string.Empty;
+    public string FailingStep { get; set; } = string.Empty;
+    public string Duration { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Detailed Selenium-specific failure analysis
+/// </summary>
+public class SeleniumFailureAnalysis
+{
+    public int TotalSeleniumIssues { get; set; }
+    public List<SeleniumIssueCategory> IssueCategories { get; set; } = new();
+    public List<SeleniumFailureDetail> TopSeleniumFailures { get; set; } = new();
+}
+
+public class SeleniumIssueCategory
+{
+    public string Category { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public double Percentage { get; set; }
+    public List<string> CommonPatterns { get; set; } = new();
+    public string RecommendedFix { get; set; } = string.Empty;
+}
+
+public class SeleniumFailureDetail
+{
+    public string Pattern { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public List<string> AffectedTests { get; set; } = new();
+    public string Category { get; set; } = string.Empty;
+    public string Severity { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Timeout-related failure analysis
+/// </summary>
+public class TimeoutFailureAnalysis
+{
+    public int TotalTimeoutIssues { get; set; }
+    public List<TimeoutCategory> TimeoutCategories { get; set; } = new();
+    public string AverageTimeoutDuration { get; set; } = string.Empty;
+    public List<string> TopTimeoutSteps { get; set; } = new();
+}
+
+public class TimeoutCategory
+{
+    public string Type { get; set; } = string.Empty; // Web Driver, Page Load, Element Wait, etc.
+    public int Count { get; set; }
+    public double Percentage { get; set; }
+    public List<string> AffectedTests { get; set; } = new();
+    public string RecommendedFix { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Environment and infrastructure failure analysis
+/// </summary>
+public class EnvironmentFailureAnalysis
+{
+    public int TotalEnvironmentIssues { get; set; }
+    public List<EnvironmentIssueCategory> IssueCategories { get; set; } = new();
+    public bool DatabaseConnectivityIssues { get; set; }
+    public bool NetworkConnectivityIssues { get; set; }
+    public bool BrowserIssues { get; set; }
+    public bool ServiceUnavailableIssues { get; set; }
+}
+
+public class EnvironmentIssueCategory
+{
+    public string Category { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public double Percentage { get; set; }
+    public List<string> AffectedTests { get; set; } = new();
+    public string Impact { get; set; } = string.Empty;
 }

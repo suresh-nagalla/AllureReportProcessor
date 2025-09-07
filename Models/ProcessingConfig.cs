@@ -52,6 +52,7 @@ public class TopStepGroup
     public string TruncatedStepName { get; set; } = string.Empty;
     public int Count { get; set; }
     public double AvgDurationMs { get; set; }
+    public long MinDurationMs { get; set; }
     public long MaxDurationMs { get; set; }
     public long TotalDurationMs { get; set; }
     public int FailedCount { get; set; }
@@ -59,8 +60,9 @@ public class TopStepGroup
 
     // Human-readable duration strings
     public string AvgDurationReadable { get; set; } = string.Empty;
-    public string TotalDurationReadable { get; set; } = string.Empty;
+    public string MinDurationReadable { get; set; } = string.Empty;
     public string MaxDurationReadable { get; set; } = string.Empty;
+    public string TotalDurationReadable { get; set; } = string.Empty;
 
     // Performance indicators
     public string PerformanceCategory { get; set; } = string.Empty; // Critical, High, Medium, Low

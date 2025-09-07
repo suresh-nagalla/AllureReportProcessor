@@ -37,6 +37,10 @@ public class QualityAnalysisService
         analysis.PerformanceTrends = AnalyzePerformanceTrends(results, historicalData);
         analysis.EnvironmentImpact = AnalyzeEnvironmentImpact(results);
         
+        // NEW: Advanced Failure Analysis
+        var failureAnalysisService = new FailureAnalysisService(_config);
+        analysis.FailureAnalysis = failureAnalysisService.AnalyzeFailures(results.TestResults);
+        
         // Actionable Insights
         analysis.CriticalIssues = IdentifyCriticalIssues(results);
         analysis.ActionableRecommendations = GenerateActionableRecommendations(analysis);

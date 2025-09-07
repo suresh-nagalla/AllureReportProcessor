@@ -80,6 +80,7 @@ public class SummaryService
                     StepName = g.Key,
                     Count = g.Count(),
                     AvgDurationMs = g.Average(s => s.DurationMs),
+                    MinDurationMs = g.Min(s => s.DurationMs),
                     MaxDurationMs = g.Max(s => s.DurationMs),
                     TotalDurationMs = g.Sum(s => (long)s.DurationMs),
                     FailedCount = g.Count(s => !s.Status.Equals("passed", StringComparison.OrdinalIgnoreCase))
@@ -98,13 +99,15 @@ public class SummaryService
                     : g.StepName,
                 Count = g.Count,
                 AvgDurationMs = g.AvgDurationMs,
+                MinDurationMs = g.MinDurationMs,
                 MaxDurationMs = g.MaxDurationMs,
                 TotalDurationMs = g.TotalDurationMs,
                 FailedCount = g.FailedCount,
                 FailRate = g.Count > 0 ? (double)g.FailedCount / g.Count * 100 : 0,
                 AvgDurationReadable = TimeUtils.ConvertMillisecondsToReadable((long)g.AvgDurationMs),
-                TotalDurationReadable = TimeUtils.ConvertMillisecondsToReadable(g.TotalDurationMs),
+                MinDurationReadable = TimeUtils.ConvertMillisecondsToReadable(g.MinDurationMs),
                 MaxDurationReadable = TimeUtils.ConvertMillisecondsToReadable(g.MaxDurationMs),
+                TotalDurationReadable = TimeUtils.ConvertMillisecondsToReadable(g.TotalDurationMs),
                 PerformanceCategory = CategorizePerformance(g.TotalDurationMs),
                 ReliabilityCategory = CategorizeReliability(g.Count > 0 ? (double)g.FailedCount / g.Count * 100 : 0)
             }).ToList();
@@ -464,8 +467,8 @@ public class SummaryService
 
         int row = 3;
         var stepHeaders = new[] {
-            "Rank", "Step Name", "Count", "Avg Duration", "Total Duration",
-            "Max Duration", "Failed Count", "Fail Rate (%)"
+            "Rank", "Step Name", "Count", "Min Duration", "Avg Duration", "Max Duration", "Total Duration",
+            "Failed Count", "Fail Rate (%)", "Performance Category", "Reliability Category"
         };
 
         for (int col = 1; col <= stepHeaders.Length; col++)
@@ -485,11 +488,14 @@ public class SummaryService
             stepsWs.Cell(row, 1).Value = step.Rank;
             stepsWs.Cell(row, 2).Value = step.StepName;
             stepsWs.Cell(row, 3).Value = step.Count;
-            stepsWs.Cell(row, 4).Value = step.AvgDurationReadable;
-            stepsWs.Cell(row, 5).Value = step.TotalDurationReadable;
+            stepsWs.Cell(row, 4).Value = step.MinDurationReadable;
+            stepsWs.Cell(row, 5).Value = step.AvgDurationReadable;
             stepsWs.Cell(row, 6).Value = step.MaxDurationReadable;
-            stepsWs.Cell(row, 7).Value = step.FailedCount;
-            stepsWs.Cell(row, 8).Value = $"{step.FailRate:F1}";
+            stepsWs.Cell(row, 7).Value = step.TotalDurationReadable;
+            stepsWs.Cell(row, 8).Value = step.FailedCount;
+            stepsWs.Cell(row, 9).Value = $"{step.FailRate:F1}";
+            stepsWs.Cell(row, 10).Value = step.PerformanceCategory;
+            stepsWs.Cell(row, 11).Value = step.ReliabilityCategory;
 
             row++;
         }
@@ -645,7 +651,7 @@ public class SummaryService
         foreach (var step in summary.TopSlowSteps)
         {
             sb.AppendLine($"{step.Rank}. {step.TruncatedStepName}");
-            sb.AppendLine($"   Count: {step.Count}, Avg: {step.AvgDurationReadable}, Total: {step.TotalDurationReadable}, Fail Rate: {step.FailRate:F1}%");
+            sb.AppendLine($"   Count: {step.Count}, Min: {step.MinDurationReadable}, Avg: {step.AvgDurationReadable}, Max: {step.MaxDurationReadable}, Total: {step.TotalDurationReadable}, Fail Rate: {step.FailRate:F1}%");
         }
 
         return sb.ToString();
@@ -673,7 +679,7 @@ public class SummaryService
             foreach (var step in summary.TopSlowSteps)
             {
                 Console.WriteLine($"{step.Rank}. {step.TruncatedStepName}");
-                Console.WriteLine($"   Count: {step.Count}, Avg: {step.AvgDurationReadable}, Total: {step.TotalDurationReadable}, Fail Rate: {step.FailRate:F1}%");
+                Console.WriteLine($"   Count: {step.Count}, Min: {step.MinDurationReadable}, Avg: {step.AvgDurationReadable}, Max: {step.MaxDurationReadable}, Total: {step.TotalDurationReadable}, Fail Rate: {step.FailRate:F1}%");
             }
         }
     }
